@@ -1,0 +1,175 @@
+server:
+  port: 8081
+  forward-headers-strategy: native
+swaggerfox:
+   base-path: /docs
+
+#logging:
+#  level:
+#    org.apache.kafka: WARN
+#    br.org.fiergs: TRACE
+#    org.springframework.web.reactive.function.client.ExchangeFunctions: TRACE
+#    org.hibernate.SQL: DEBUG
+#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+spring:
+  http:
+    log-request-details: true
+  main:
+    allow-bean-definition-overriding: true
+    web-application-type: reactive
+  application:
+    name: pedido
+#  datasource:
+#    driver-class-name: oracle.jdbc.driver.OracleDriver
+#    username: apims
+#    password: ENC(LbLCbQQCU9/cbDMObyYZ50h5vUJY8ACB)
+#    url: jdbc:oracle:thin:@//srvdes.sistemafiergs.org.br:1521/dbdes.srvdes.sistemafiergs.org.br
+#    hikari:
+#      validation-query: SELECT 1 FROM DUAL
+#      validation-timeout: 60000
+#  data:
+#    mongodb:
+#      uri: mongodb://fiergs_payment_username:f1eRG%24_M%40ngO@mongodb01-des.sistemafiergs.com.br:27017,mongodb02-des.sistemafiergs.com.br:27017,mongodb03-des.sistemafiergs.com.br:27017/fiergs-payment?replicaSet=rs0&maxIdleTimeMS=183200000&socketTimeoutMS=183200000&ssl=true
+#  cloud:
+#    stream:
+#      default-binder: kafka
+#      binders:
+#        kafka:
+#          type: kafka
+#          environment:
+#            spring:
+#              kafka:
+#                bootstrap-servers: localhost:9092
+#      bindings:
+#        input:
+#          destination: my-topic
+#          group: my-group
+#        output:
+#          destination: my-topic
+#        binder:
+#          brokers: kafka-broker-01-dev.sistemafiergs.com.br,kafka-broker-02-dev.sistemafiergs.com.br,kafka-broker-03-dev.sistemafiergs.com.br
+#          # brokers: localhost
+#      bindings:
+#        slip-request-output:
+#          destination: fiergs.slip-request.v1
+#          contentType: application/json
+#        slip-request-input:
+#          destination: fiergs.slip-request.v1
+#          contentType: application/json
+#          group: ${spring.application.name}
+#
+#        slip-response-output:
+#          destination: fiergs.slip-response.v1
+#          contentType: application/json
+#        slip-response-input:
+#          destination: fiergs.slip-response.v1
+#          contentType: application/json
+#          group: ${spring.application.name}
+#
+#        slip-settlement-request-output:
+#          destination: fiergs.slip-settlement-request.v1
+#          contentType: application/json
+#        slip-settlement-request-input:
+#          destination: fiergs.slip-settlement-request.v1
+#          contentType: application/json
+#          group: ${spring.application.name}
+#
+#        slip-settlement-response-output:
+#          destination: fiergs.slip-settlement-response.v1
+#          contentType: application/json
+#        slip-settlement-response-input:
+#          destination: fiergs.slip-settlement-response.v1
+#          contentType: application/json
+#          group: ${spring.application.name}
+#
+#        creditcard-request-output:
+#          destination: fiergs.creditcard-request.v1
+#          contentType: application/json
+#        creditcard-request-input:
+#          destination: fiergs.creditcard-request.v1
+#          contentType: application/json
+#          group: ${spring.application.name}
+#
+#        creditcard-response-output:
+#          destination: fiergs.creditcard-response.v1
+#          contentType: application/json
+#        creditcard-response-input:
+#          destination: fiergs.creditcard-response.v1
+#          contentType: application/json
+#          group: ${spring.application.name}
+#
+#        debitcard-response-output:
+#          destination: fiergs.debitcard-response.v1
+#          contentType: application/json
+#        debitcard-response-input:
+#          destination: fiergs.debitcard-response.v1
+#          contentType: application/json
+#          group: ${spring.application.name}
+#
+#        pix-settlement-response-output:
+#          destination: fiergs.pix-settlement-response.v1
+#          contentType: application/json
+#        pix-settlement-response-input:
+#          destination: fiergs.pix-settlement-response.v1
+#          contentType: application/json
+#          group: ${spring.application.name}
+#
+#        integration-output:
+#          destination: fiergs.payment-integration.v1
+#          contentType: application/json
+#        integration-input:
+#          destination: fiergs.payment-integration.v1
+#          contentType: application/json
+#          group: ${spring.application.name}
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          issuer-uri: https://keycloak-des.sistemafiergs.com.br/auth/realms/FIERGS
+#
+#app:
+##  bank-slip-api-key: ENC(TfVtCDmXMoscZO3dN3X88U36VRhdg0GcqS/pQn/bYiAGOvMWQurOvUNZPf9jlMQDx6/5p3bBAshqpH7d38SymB7xkMSyidnNUHfmCCxMH+0=)
+#   bank-slip-api-key: b7>E9v#eQ!,UdbHEU*5]-vC<{j$3X`Pre`UpA2hz8CW%vBU-\NS66z3?f68w!pef
+#
+#zielo:
+#  validate-token-url: https://sesiteste-api.cloud.zielo.com.br/index.php/valid_token
+#
+#bb:
+#  auth-endpoint: https://oauth.hm.bb.com.br
+#  slip-endpoint: https://cobranca.homologa.bb.com.br:7101/registrarBoleto
+#  pix-endpoint: https://api.hm.bb.com.br
+#  pix-configs:
+#  - key: 7f6844d0-de89-47e5-9ef7-e0a35a681615
+#    client-id: eyJpZCI6Ijc3OTFkN2ItIiwiY29kaWdvUHVibGljYWRvciI6MCwiY29kaWdvU29mdHdhcmUiOjE2NDcxLCJzZXF1ZW5jaWFsSW5zdGFsYWNhbyI6MX0
+#    client-secret: eyJpZCI6ImNjNTM0ZTQtODY2Mi00NjhhIiwiY29kaWdvUHVibGljYWRvciI6MCwiY29kaWdvU29mdHdhcmUiOjE2NDcxLCJzZXF1ZW5jaWFsSW5zdGFsYWNhbyI6MSwic2VxdWVuY2lhbENyZWRlbmNpYWwiOjEsImFtYmllbnRlIjoiaG9tb2xvZ2FjYW8iLCJpYXQiOjE2MjIxMzQ4MjYyNjR9
+#    dev-app-key: d27b57790effab601367e17d60050656b901a5bc
+#
+#cielo:
+#  endpoint: https://apisandbox.cieloecommerce.cielo.com.br/1/sales
+#  query-endpoint: https://apiquerysandbox.cieloecommerce.cielo.com.br/1/sales
+#  merchantId: 845bb527-5562-4685-b647-5c00e801a51a
+#  merchantKey: JXRHESMUNKPJAIQABPRMTMZYDZMABVTBDWSAACAC
+#  provider: SIMULADO
+#  returnUrl: https://teste.sistemafiergs.com.br
+#
+#cos:
+#  endpoint: https://s3.us-south.cloud-object-storage.appdomain.cloud
+#  location: us
+#  api-key: "AKCkcvPeuGxrqCbQRFdGQ_3V8xBB7roG1BnYBiR7_6ud"
+#  service-instance-id: "crn:v1:bluemix:public:cloud-object-storage:global:a/445096c700e8e6a2cc18c2a003ba1745:fd097a04-3e6e-49bb-a4d7-9b7d390b6554::"
+#  bucket: fiergs-payment-dev
+#
+#
+#spring.kafka.bootstrap-servers: kafka-broker-01-dev.sistemafiergs.com.br:9092,kafka-broker-02-dev.sistemafiergs.com.br:9092,kafka-broker-03-dev.sistemafiergs.com.br:9092
+#spring.kafka.properties.security.protocol: SASL_PLAINTEXT
+#spring.kafka.properties.sasl.mechanism: SCRAM-SHA-256
+#spring.kafka.properties.sasl.jaas.config: org.apache.kafka.common.security.scram.ScramLoginModule required username="fiergs_payment" password="f1eRG$_M@ngO";
+soap:
+  service:
+    wsdl: "http://wwwtest.sistemafiergs.org.br:7880/iif-core/pedidoDeVenda"
+    namespace-url: "http://ws.iifcore.fiergs.org.br/"
+    namespace-method-uri: "http://ws.iifcore.fiergs.org.br/"
+    uri-siga: "http://wwwtest.sistemafiergs.org.br:7880/iif-core/pedidoDeVenda"
+    port-name: PedidoDeVendaWsImplPort
+    service-name: pedidoDeVenda

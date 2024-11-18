@@ -1,0 +1,122 @@
+plugins {
+	id 'java'
+	id 'war'
+	id 'org.springframework.boot' version '2.2.13.RELEASE'
+}
+
+group = 'com.pedidovenda'
+version = '0.0.1-SNAPSHOT'
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+repositories {
+	maven { url 'https://srvnexus.sistemafiergs.com.br/repository/maven-public/'
+		metadataSources {
+			mavenPom() //use maven pom
+			artifact() //look directly for the artifact
+			ignoreGradleMetadataRedirection() //it fixes the issue actually
+		}
+	}
+}
+
+springBoot {
+	buildInfo()
+}
+
+dependencies {
+	implementation platform("br.org.fiergs:fiergs-platform:1.0.4")
+
+	// FIERGS Starters
+	implementation("br.org.fiergs:fiergs-webflux-spring-boot-starter")
+	implementation("br.org.fiergs:fiergs-common-model")
+
+	// Spring data mongodb
+	//implementation ("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
+
+	// Spring cloud config
+	implementation("org.springframework.cloud:spring-cloud-starter-config")
+
+	// Spring cloud streams dependencies
+	//implementation("org.springframework.cloud:spring-cloud-stream")
+	//implementation("org.springframework.cloud:spring-cloud-starter-stream-kafka")
+	implementation("org.springframework.integration:spring-integration-webflux")
+
+	// Spring data jdbc
+	//implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	//implementation("com.oracle:ojdbc6:${ojdbcVersion}")
+
+	//Freemarker
+	implementation("org.springframework.boot:spring-boot-starter-freemarker")
+
+	// Metricas
+	//implementation 'io.micrometer:micrometer-registry-prometheus:1.11.1'
+
+	// Springfox (swagger)
+	implementation("io.springfox:springfox-swagger2")
+	implementation("io.springfox:springfox-swagger-ui")
+	implementation("io.springfox:springfox-spring-webflux")
+
+	// JAX-WS
+	implementation 'javax.xml.ws:jaxws-api:2.3.1'
+
+	// JAX-WS Implementation (Metro)
+	implementation 'com.sun.xml.ws:rt:2.3.2'
+
+	// JAXB API and Implementation
+	implementation 'javax.xml.bind:jaxb-api:2.3.1'
+	implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.2'
+
+	implementation 'org.apache.cxf:cxf-rt-security:3.5.0'
+	implementation 'org.apache.cxf:cxf-rt-ws-security:3.5.0'
+
+	// Criptografia
+	//implementation("com.github.ulisesbocchio:jasypt-spring-boot-starter")
+
+	//Boleto
+	//implementation("org.jrimum:jrimum-bopepo:${jrimumBopepo}")
+
+	//QR Code
+	//implementation("com.github.kenglxn.QRGen:javase:2.6.0")
+
+	//S3
+	//implementation("com.ibm.cos:cos-spring-boot-starter:${ibmCosS3}")
+
+	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+	implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+	//WebServices
+	implementation 'org.springframework.boot:spring-boot-starter-web-services'
+	implementation 'org.springframework.ws:spring-ws-core'
+
+	implementation("io.projectreactor.netty:reactor-netty")
+	implementation("org.apache.commons:commons-lang3")
+
+	runtimeOnly("javax.xml.bind:jaxb-api")
+	runtimeOnly("com.sun.xml.bind:jaxb-impl:2.3.3")
+	runtimeOnly("com.sun.xml.bind:jaxb-core:2.3.0")
+
+	// Gerar Excel
+	//implementation 'org.apache.poi:poi:5.0.0'
+	//mplementation 'org.apache.poi:poi-ooxml:5.0.0'
+
+	// Gerar CSV
+	//implementation 'org.apache.commons:commons-csv:1.8'
+
+	// Test Dependencies
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	testImplementation("org.jeasy:easy-random-core:4.2.0")
+	testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
+	testImplementation("org.springframework.cloud:spring-cloud-stream-test-support")
+	testImplementation("com.squareup.okhttp3:okhttp:4.0.1")
+	testImplementation("com.squareup.okhttp3:mockwebserver:4.0.1")
+}
+
+test {
+	useJUnitPlatform()
+	forkEvery = 1
+}
