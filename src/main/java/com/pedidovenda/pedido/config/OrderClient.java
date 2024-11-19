@@ -1,9 +1,6 @@
 package com.pedidovenda.pedido.config;
 
-import com.pedidovenda.pedido.api.v1.dto.order.InstallmentDTO;
-import com.pedidovenda.pedido.api.v1.dto.order.ItemDTO;
-import com.pedidovenda.pedido.api.v1.dto.order.OrderDTO;
-import com.pedidovenda.pedido.api.v1.dto.order.RateDTO;
+import com.pedidovenda.pedido.api.v1.dto.order.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -26,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Base64;
 
 @Component
@@ -50,7 +48,8 @@ public class OrderClient {
     private String uriSiga;
 
 
-    public Mono<Long> enviarPedido(OrderDTO orderDto, String token) throws Exception {
+    public Mono<OrderResponseDTO> callSoapClient(OrderDTO orderDto, String token, String origin) throws Exception {
+        OrderResponseDTO ord = new OrderResponseDTO();
         try {
             URL wsdlURL = new URL(soapWsdl);
             QName serviceName = new QName(namespaceUrl, service);
@@ -98,7 +97,12 @@ public class OrderClient {
 
             logSoapMessage(soapResponse);
 
-            return Mono.just(orderNumber(responseBody));
+            String no = orderNumber(responseBody);
+            ord.setApplication(origin);
+            ord.setSalesOrder(no);
+            ord.setCreatedAt(LocalDateTime.now());
+
+            return Mono.just(ord);
 
         } catch (Exception e) {
             return Mono.error(new Exception("Erro ao enviar pedido: " + e.getMessage(), e));
@@ -170,7 +174,7 @@ public class OrderClient {
         }
     }
 
-    private Long orderNumber(SOAPBody soapBody) throws SOAPException {
+    private String orderNumber(SOAPBody soapBody) throws SOAPException {
         // Obter o elemento ns0:gerarPedidoResponse
         NodeList gerarPedidoResponseList = soapBody.getElementsByTagNameNS("http://ws.iifcore.fiergs.org.br/", "gerarPedidoResponse");
         if (gerarPedidoResponseList.getLength() == 0) {
@@ -193,7 +197,7 @@ public class OrderClient {
         }
 
         try {
-            return Long.parseLong(numeroPedido.trim());
+            return numeroPedido.trim();
         } catch (NumberFormatException e) {
             throw new SOAPException("Número do pedido inválido: " + numeroPedido, e);
         }

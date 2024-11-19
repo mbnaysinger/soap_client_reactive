@@ -1,6 +1,7 @@
 package com.pedidovenda.pedido.api.v1.rest;
 
 import com.pedidovenda.pedido.api.v1.dto.order.OrderDTO;
+import com.pedidovenda.pedido.api.v1.dto.order.OrderResponseDTO;
 import com.pedidovenda.pedido.domain.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,22 +22,19 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @PostMapping("/gerar")
-    public Mono<ResponseEntity<Long>> gerarPedido(@RequestBody @Valid OrderDTO orderDto,
-                                                  @RequestHeader("Authorization") String token) {
+    @PostMapping("/generatedSalesOrder")
+    public Mono<ResponseEntity<OrderResponseDTO>> gerarPedido(@RequestBody @Valid OrderDTO orderDto,
+                                                              @RequestHeader("token") String token,
+                                                              @RequestParam("origin") String origin) {
 
-        System.out.println("Recebendo pedido com OrderDTO: " + orderDto);
-        System.out.println("Token de autorização: " + token);
         try {
-            return orderService.gerarPedido(orderDto, token)
+            return orderService.generOrder(orderDto, token, origin)
                     .map(orderId -> new ResponseEntity<>(orderId, HttpStatus.OK))
                     .onErrorResume(e -> {
-                        // Log the error and handle it gracefully
                         e.printStackTrace();
                         return Mono.just(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
                     });
         } catch (Exception e) {
-            // Log the exception
             e.printStackTrace();
             return Mono.just(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
         }

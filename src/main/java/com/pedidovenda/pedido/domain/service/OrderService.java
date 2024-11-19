@@ -1,6 +1,7 @@
 package com.pedidovenda.pedido.domain.service;
 
 import com.pedidovenda.pedido.api.v1.dto.order.OrderDTO;
+import com.pedidovenda.pedido.api.v1.dto.order.OrderResponseDTO;
 import com.pedidovenda.pedido.config.OrderClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ public class OrderService {
         this.orderClient = orderClient;
     }
 
-    public Mono<Long> gerarPedido(OrderDTO orderDto, String token) throws Exception {
-        return orderClient.enviarPedido(orderDto, token);
+    public Mono<OrderResponseDTO> generOrder(OrderDTO orderDto, String token, String origin) throws Exception {
+        return orderClient.callSoapClient(orderDto, token, origin);
     }
 }
