@@ -3,40 +3,38 @@ package com.pedidovenda.pedido.config;
 import com.pedidovenda.pedido.api.v1.dto.order.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import reactor.core.publisher.Mono;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.soap.*;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.Dispatch;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.StringWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.Base64;
 
 @Component
 public class OrderClient {
+
+    @Value("${soap.service.namespace-method-uri}")
+    private String namespaceUrlMethod;
+
+    @Value("${soap.service.wss-url}")
+    private String wssUrl;
+
+    @Value("${soap.service.username}")
+    private String userName;
+
+    @Value("${soap.service.userkey}")
+    private String userKey;
 
     @Value("${soap.service.wsdl}")
     private String soapWsdl;
 
     @Value("${soap.service.namespace-url}")
     private String namespaceUrl;
-
-    @Value("${soap.service.namespace-method-uri}")
-    private String namespaceUrlMethod;
 
     @Value("${soap.service.port-name}")
     private String port;
@@ -57,46 +55,23 @@ public class OrderClient {
             javax.xml.ws.Service service = javax.xml.ws.Service.create(wsdlURL, serviceName);
             Dispatch<SOAPMessage> dispatch = service.createDispatch(portName, SOAPMessage.class, javax.xml.ws.Service.Mode.MESSAGE);
 
-            // Configuração do tipo de conteúdo e SOAPAction
             dispatch.getRequestContext().put(Dispatch.SOAPACTION_USE_PROPERTY, Boolean.TRUE);
             dispatch.getRequestContext().put(Dispatch.SOAPACTION_URI_PROPERTY, uriSiga);
 
-            // Criação da mensagem SOAP
             MessageFactory messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_1_PROTOCOL);
             SOAPMessage soapMessage = messageFactory.createMessage();
-            SOAPPart soapPart = soapMessage.getSOAPPart();
-
-            // Criação do envelope SOAP
-            SOAPEnvelope envelope = soapPart.getEnvelope();
-            envelope.addNamespaceDeclaration("tns", "http://ws.iifcore.fiergs.org.br/");
-            SOAPBody soapBody = envelope.getBody();
-
-            // Adicionando cabeçalho de segurança
-            SOAPHeader header = envelope.getHeader();
-            SOAPElement security = header.addChildElement("Security", "wsse", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd");
-            SOAPElement usernameToken = security.addChildElement("UsernameToken", "wsse");
-            SOAPElement username = usernameToken.addChildElement("Username", "wsse");
-            username.addTextNode("daniel.chaves");
-            SOAPElement password = usernameToken.addChildElement("Password", "wsse");
-            password.addTextNode("dbtest01");
-
-            // Criação do corpo do SOAP e mapeamento do OrderDTO e token
-            SOAPElement soapBodyElem = soapBody.addChildElement("gerarPedido", "tns");
+            SOAPElement soapBodyElem = getSoapElement(soapMessage);
             mapOrderDTOToSoapBody(orderDto, soapBodyElem, token);
 
-            // Salvando alterações e enviando a mensagem
             soapMessage.saveChanges();
-
-            // Log da mensagem SOAP
             logSoapMessage(soapMessage);
 
             SOAPMessage soapResponse = dispatch.invoke(soapMessage);
-
-            // Processa a resposta para extrair o número do pedido
             SOAPBody responseBody = soapResponse.getSOAPBody();
 
             logSoapMessage(soapResponse);
 
+            //seta o response
             String no = orderNumber(responseBody);
             ord.setApplication(origin);
             ord.setSalesOrder(no);
@@ -107,6 +82,24 @@ public class OrderClient {
         } catch (Exception e) {
             return Mono.error(new Exception("Erro ao enviar pedido: " + e.getMessage(), e));
         }
+    }
+
+    private SOAPElement getSoapElement(SOAPMessage soapMessage) throws SOAPException {
+        SOAPPart soapPart = soapMessage.getSOAPPart();
+
+        SOAPEnvelope envelope = soapPart.getEnvelope();
+        envelope.addNamespaceDeclaration("tns", namespaceUrlMethod);
+        SOAPBody soapBody = envelope.getBody();
+
+        SOAPHeader header = envelope.getHeader();
+        SOAPElement security = header.addChildElement("Security", "wsse", wssUrl);
+        SOAPElement usernameToken = security.addChildElement("UsernameToken", "wsse");
+        SOAPElement username = usernameToken.addChildElement("Username", "wsse");
+        username.addTextNode(userName);
+        SOAPElement password = usernameToken.addChildElement("Password", "wsse");
+        password.addTextNode(userKey);
+
+        return soapBody.addChildElement("gerarPedido", "tns");
     }
 
     private void mapOrderDTOToSoapBody(OrderDTO orderDto, SOAPElement rootElement, String token) throws SOAPException {
@@ -175,23 +168,20 @@ public class OrderClient {
     }
 
     private String orderNumber(SOAPBody soapBody) throws SOAPException {
-        // Obter o elemento ns0:gerarPedidoResponse
-        NodeList gerarPedidoResponseList = soapBody.getElementsByTagNameNS("http://ws.iifcore.fiergs.org.br/", "gerarPedidoResponse");
+
+        NodeList gerarPedidoResponseList = soapBody.getElementsByTagNameNS(namespaceUrlMethod, "gerarPedidoResponse");
         if (gerarPedidoResponseList.getLength() == 0) {
             throw new SOAPException("Elemento 'ns0:gerarPedidoResponse' não encontrado");
         }
         Node gerarPedidoResponse = gerarPedidoResponseList.item(0);
 
-        // Obter o elemento return
         NodeList returnNodes = ((org.w3c.dom.Element) gerarPedidoResponse).getElementsByTagName("return");
         if (returnNodes.getLength() == 0) {
             throw new SOAPException("Elemento 'return' não encontrado");
         }
 
-        // Extrair o valor do elemento return
         String numeroPedido = returnNodes.item(0).getTextContent();
 
-        // Validar e converter o número do pedido
         if (numeroPedido == null || numeroPedido.trim().isEmpty()) {
             throw new SOAPException("Número do pedido está vazio");
         }
@@ -203,25 +193,16 @@ public class OrderClient {
         }
     }
 
+    //melhorar usando logger
     private void logSoapMessage(SOAPMessage soapMessage) {
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             soapMessage.writeTo(stream);
             String message = new String(stream.toByteArray(), StandardCharsets.UTF_8);
-            System.out.println("Mensagem SOAP Enviada: \n" + message); // Ou logue usando uma biblioteca de logging
+            System.out.println("Mensagem SOAP Enviada: \n" + message);
         } catch (Exception e) {
-            e.printStackTrace(); // Log da exceção ao tentar logar a mensagem
+            e.printStackTrace();
         }
     }
 
-    private void logSoapMessage(SOAPBody responseBody) {
-        try {
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            responseBody.wait(stream.size());
-            String message = new String(stream.toByteArray(), StandardCharsets.UTF_8);
-            System.out.println("Mensagem SOAP Recebida: \n" + message); // Ou logue usando uma biblioteca de logging
-        } catch (Exception e) {
-            e.printStackTrace(); // Log da exceção ao tentar logar a mensagem
-        }
-    }
 }
