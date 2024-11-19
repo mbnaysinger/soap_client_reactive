@@ -6,12 +6,24 @@ import com.pedidovenda.pedido.api.v1.dto.order.OrderDTO;
 import com.pedidovenda.pedido.api.v1.dto.order.RateDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import reactor.core.publisher.Mono;
 
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.soap.*;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.Dispatch;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.StringWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -123,7 +135,7 @@ public class OrderClient {
                 parcelasElement.addChildElement("numero").addTextNode(installment.getNumero() != null ? installment.getNumero() : "");
                 parcelasElement.addChildElement("valor").addTextNode(installment.getValor() != null ? installment.getValor() : "");
                 parcelasElement.addChildElement("vencimento").addTextNode(installment.getVencimento() != null ? installment.getVencimento() : "");
-                parcelasElement.addChildElement("titulo").addTextNode(installment.getTitulo() != null ? installment.getTitulo() : "");
+                parcelasElement.addChildElement("titulo").addTextNode(installment.getTitulo() != null ? installment.getTitulo() : "0");
             }
         }
 
@@ -158,12 +170,33 @@ public class OrderClient {
         }
     }
 
-    private Long orderNumber(SOAPBody respSoap) throws SOAPException {
-        SOAPElement pedidoResponseElement = (SOAPElement) respSoap.getElementsByTagName("gerarPedidoResponse").item(0);
-        if (pedidoResponseElement != null) {
-            return Long.valueOf(pedidoResponseElement.getElementsByTagName("return").item(0).getTextContent());
+    private Long orderNumber(SOAPBody soapBody) throws SOAPException {
+        // Obter o elemento ns0:gerarPedidoResponse
+        NodeList gerarPedidoResponseList = soapBody.getElementsByTagNameNS("http://ws.iifcore.fiergs.org.br/", "gerarPedidoResponse");
+        if (gerarPedidoResponseList.getLength() == 0) {
+            throw new SOAPException("Elemento 'ns0:gerarPedidoResponse' não encontrado");
         }
-        throw new SOAPException("Resposta SOAP não contém o número do pedido esperado.");
+        Node gerarPedidoResponse = gerarPedidoResponseList.item(0);
+
+        // Obter o elemento return
+        NodeList returnNodes = ((org.w3c.dom.Element) gerarPedidoResponse).getElementsByTagName("return");
+        if (returnNodes.getLength() == 0) {
+            throw new SOAPException("Elemento 'return' não encontrado");
+        }
+
+        // Extrair o valor do elemento return
+        String numeroPedido = returnNodes.item(0).getTextContent();
+
+        // Validar e converter o número do pedido
+        if (numeroPedido == null || numeroPedido.trim().isEmpty()) {
+            throw new SOAPException("Número do pedido está vazio");
+        }
+
+        try {
+            return Long.parseLong(numeroPedido.trim());
+        } catch (NumberFormatException e) {
+            throw new SOAPException("Número do pedido inválido: " + numeroPedido, e);
+        }
     }
 
     private void logSoapMessage(SOAPMessage soapMessage) {
