@@ -24,6 +24,12 @@ springBoot {
 	buildInfo()
 }
 
+project.ext {
+//	jrimumBopepo ="0.2.3-SNAPSHOT"
+//	ibmCosS3="1.0.3"
+	ojdbcVersion = "11.2.0"
+}
+
 dependencies {
 	implementation platform("br.org.fiergs:fiergs-platform:1.0.4")
 
@@ -32,7 +38,7 @@ dependencies {
 	implementation("br.org.fiergs:fiergs-common-model")
 
 	// Spring data mongodb
-	//implementation ("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
+	implementation ("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
 
 	// Spring cloud config
 	implementation("org.springframework.cloud:spring-cloud-starter-config")
@@ -43,8 +49,8 @@ dependencies {
 	implementation("org.springframework.integration:spring-integration-webflux")
 
 	// Spring data jdbc
-	//implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	//implementation("com.oracle:ojdbc6:${ojdbcVersion}")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("com.oracle:ojdbc6:${ojdbcVersion}")
 
 	//Freemarker
 	implementation("org.springframework.boot:spring-boot-starter-freemarker")
@@ -70,8 +76,13 @@ dependencies {
 	implementation 'org.apache.cxf:cxf-rt-security:3.5.0'
 	implementation 'org.apache.cxf:cxf-rt-ws-security:3.5.0'
 
+	// Azure Blob Storage
+	implementation 'com.azure:azure-storage-blob:12.26.0'
+	implementation 'com.azure:azure-identity:1.12.2'
+	implementation 'com.azure:azure-core:1.37.0'
+
 	// Criptografia
-	//implementation("com.github.ulisesbocchio:jasypt-spring-boot-starter")
+	implementation("com.github.ulisesbocchio:jasypt-spring-boot-starter")
 
 	//Boleto
 	//implementation("org.jrimum:jrimum-bopepo:${jrimumBopepo}")
@@ -90,7 +101,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web-services'
 	implementation 'org.springframework.ws:spring-ws-core'
 
-	implementation("io.projectreactor.netty:reactor-netty")
+	//implementation("io.projectreactor.netty:reactor-netty")
 	implementation("org.apache.commons:commons-lang3")
 
 	runtimeOnly("javax.xml.bind:jaxb-api")

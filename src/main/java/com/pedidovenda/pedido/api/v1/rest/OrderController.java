@@ -23,9 +23,9 @@ public class OrderController {
     }
 
     @PostMapping("/generatedSalesOrder")
-    public Mono<ResponseEntity<OrderResponseDTO>> gerarPedido(@RequestBody @Valid OrderDTO orderDto,
-                                                              @RequestHeader("token") String token,
-                                                              @RequestParam("origin") String origin) {
+    public Mono<ResponseEntity<OrderResponseDTO>> generatedSalesOrder(@RequestBody @Valid OrderDTO orderDto,
+                                                                      @RequestHeader("token") String token,
+                                                                      @RequestParam("origin") String origin) {
 
         try {
             return orderService.generOrder(orderDto, token, origin)
