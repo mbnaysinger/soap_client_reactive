@@ -22,15 +22,25 @@ spring:
     name: pedido
   datasource:
     driver-class-name: oracle.jdbc.driver.OracleDriver
+<<<<<<< HEAD
     username: apims
     password: ENC(LbLCbQQCU9/cbDMObyYZ50h5vUJY8ACB)
     url: jdbc:oracle:thin:@//srvdes.sistemafiergs.org.br:1521/dbdes.srvdes.sistemafiergs.org.br
+=======
+    username: 
+    password: 
+    url: 
+>>>>>>> ce6183915ba88024682705c8292bb970b97d725b
     hikari:
       validation-query: SELECT 1 FROM DUAL
       validation-timeout: 60000
   data:
     mongodb:
+<<<<<<< HEAD
       uri: mongodb://fiergs_payment_username:f1eRG%24_M%40ngO@mongodb01-des.sistemafiergs.com.br:27017,mongodb02-des.sistemafiergs.com.br:27017,mongodb03-des.sistemafiergs.com.br:27017/fiergs-payment?replicaSet=rs0&maxIdleTimeMS=183200000&socketTimeoutMS=183200000&ssl=true
+=======
+      uri: 
+>>>>>>> ce6183915ba88024682705c8292bb970b97d725b
 soap:
   service:
     wsdl: "http://wwwtest.sistemafiergs.org.br:7880/iif-core/pedidoDeVenda"
@@ -40,6 +50,7 @@ soap:
     wss-url: "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
     port-name: PedidoDeVendaWsImplPort
     service-name: pedidoDeVenda
+<<<<<<< HEAD
     username: daniel.chaves
     userkey: dbtest01
 jasypt:
@@ -51,3 +62,10 @@ azure:
   storage:
     connection-string: DefaultEndpointsProtocol=https;AccountName=recinddevlocal;AccountKey=06Du33/Zm1j+4dNqze0UtYSybQ2BxIUIwY5YBRV60JWc0RhmKjcdAcQc+Oa1PwJMWxG/FPKtgRkF+AStQA1WQw==;EndpointSuffix=core.windows.net
     container-name: documents
+=======
+    username: 
+    userkey: 
+jasypt:
+  encryptor:
+    password: RoNGlA
+>>>>>>> ce6183915ba88024682705c8292bb970b97d725b
